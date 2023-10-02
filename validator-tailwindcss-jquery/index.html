@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Validation</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: rgb(203 213 225);
+    }
+    @media screen and (max-width: 600px) {
+      #myForm {
+        margin-top: 12%;
+        max-width: 80%;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+  <button id="backButton" onclick="window.location.href='../../../index.html#portfolio'" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded absolute left-3 top-3">
+      Back
+  </button>
+
+  <form id="myForm" class="bg-gray-50 rounded-lg shadow-lg p-6 w-full max-w-md my-4">
+    <h1 class="text-center text-2xl font-semibold mb-6">Form Validation</h1>
+    <div class="mb-4">
+      <label for="name" class="block text-gray-700 text-lg mb-1">Name</label>
+      <input type="text" id="name" name="name"
+        class="border rounded-lg px-4 py-2 w-full border-blue-200 focus:outline-none focus:border-blue-500">
+    </div>
+    <div class="mb-4">
+      <label for="email" class="block text-gray-700 text-lg mb-1">Email</label>
+      <input type="email" id="email" name="email"
+        class="border rounded-lg px-4 py-2 w-full border-blue-200 focus:outline-none focus:border-blue-500">
+    </div>
+    <div class="mb-4">
+      <label for="password" class="block text-gray-700 text-lg mb-1">Password</label>
+      <input type="password" id="password" name="password" minlength="6"
+        class="border rounded-lg px-4 py-2 w-full border-blue-200 focus:outline-none focus:border-blue-500">
+    </div>
+    <div class="mb-4">
+      <label for="confirm-password" class="block text-gray-700 text-lg mb-1">Confirm Password</label>
+      <input type="password" id="confirm-password" name="confirm-password" minlength="6"
+        class="border rounded-lg px-4 py-2 w-full border-blue-200 focus:outline-none focus:border-blue-500">
+    </div>
+    <div class="mb-4">
+      <button type="submit"
+        class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg w-full hover:bg-blue-600 transition duration-300">
+        Register <i class="fas fa-paper-plane ml-2"></i>
+      </button>
+    </div>
+  </form>
+
+  <div id="success-alert" class="hidden bg-green-500 text-white py-2 px-6 absolute top-8 right-8 rounded-md">
+    (Demo) Account Successfully Registered!
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#myForm').submit(function(event) {
+        event.preventDefault();
+        var name = $('#name').val();
+        var email = $('#email').val();
+        var password = $('#password').val();
+        var confirmPassword = $('#confirm-password').val();
+      
+        $(".error").remove();
+      
+        if (name.length < 1) {
+          $('#name').removeClass('border-blue-200');
+          $('#name').removeClass('focus:border-blue-500');
+          $('#name').after('<div class="error text-red-500 text-sm">Name is required</div>');
+          $('#name').addClass('border-red-500');
+          $('#name').addClass('focus:border-red-500');
+        } else {
+          $('#name').removeClass('border-red-500');
+        }
+      
+        if (email.length < 1) {
+          $('#email').removeClass('border-blue-200');
+          $('#email').removeClass('focus:border-blue-500');
+          $('#email').after('<div class="error text-red-500 text-sm">Email is required</div>');
+          $('#email').addClass('focus:border-red-500');
+          $('#email').addClass('border-red-500');
+        } else if (!validateEmail(email)) {
+          $('#email').removeClass('border-blue-200');
+          $('#email').removeClass('focus:border-blue-500');
+          $('#email').after('<div class="error text-red-500 text-sm">Email is not valid</div>');
+          $('#email').addClass('focus:border-red-500');
+          $('#email').addClass('border-red-500');
+        } else {
+          $('#email').removeClass('border-red-500');
+        }
+      
+        if (password.length < 6) {
+          $('#password').removeClass('border-blue-200');
+          $('#password').removeClass('focus:border-blue-500');
+          $('#password').after('<div class="error text-red-500 text-sm">Password must be at least 6 characters long</div>');
+          $('#password').addClass('focus:border-red-500');
+          $('#password').addClass('border-red-500');
+        } else {
+          $('#password').removeClass('border-red-500');
+        }
+      
+        if (confirmPassword.length < 6) {
+          $('#confirm-password').removeClass('border-blue-200');
+          $('#confirm-password').removeClass('focus:border-blue-500');
+          $('#confirm-password').after('<div class="error text-red-500 text-sm">Password confirmation must be at least 6 characters long</div>');
+          $('#confirm-password').addClass('focus:border-red-500');
+          $('#confirm-password').addClass('border-red-500');
+        } else if (password !== confirmPassword) {
+          $('#confirm-password').removeClass('border-blue-200');
+          $('#confirm-password').removeClass('focus:border-blue-500');
+          $('#confirm-password').after('<div class="error text-red-500 text-sm">Password confirmation does not match</div>');
+          $('#confirm-password').addClass('focus:border-red-500');
+          $('#confirm-password').addClass('border-red-500');
+        } else {
+          $('#confirm-password').removeClass('border-red-500');
+        }
+
+        if ($(".error").length === 0) {
+          $('#success-alert').removeClass('hidden');
+        
+          $('#name').val('');
+          $('#email').val('');
+          $('#password').val('');
+          $('#confirm-password').val('');
+
+          setTimeout(function() {
+            $('#success-alert').addClass('hidden');
+          }, 5000);
+        }
+      });
+    
+      function validateEmail(email) {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+      }
+    
+      $('#name').on('input', function() {
+        $(".error").remove();
+        $('#name').removeClass('border-red-500');
+        $('#name').removeClass('focus:border-red-500');
+        $('#name').addClass('border-blue-200');
+        $('#name').addClass('focus:border-blue-500');
+        var name = $('#name').val();
+        if (name.length < 1) {
+          $('#name').removeClass('border-blue-200');
+          $('#name').removeClass('focus:border-blue-500');
+          $('#name').addClass('border-red-500');
+          $('#name').addClass('focus:border-red-500');
+          $('#name').after('<div class="error text-red-500 text-sm">Name is required</div>');
+        }
+      });
+    
+      $('#email').on('input', function() {
+        $(".error").remove();
+        $('#email').removeClass('border-red-500');
+        $('#email').removeClass('focus:border-red-500');
+        $('#email').addClass('border-blue-200');
+        $('#email').addClass('focus:border-blue-500');
+        var email = $('#email').val();
+        if (email.length < 1) {
+          $('#email').removeClass('border-blue-200');
+          $('#email').removeClass('focus:border-blue-500');
+          $('#email').addClass('border-red-500');
+          $('#email').addClass('focus:border-red-500');
+          $('#email').after('<div class="error text-red-500 text-sm">Email is required</div>');
+        } else if (!validateEmail(email)) {
+          $('#email').removeClass('border-blue-200');
+          $('#email').removeClass('focus:border-blue-500');
+          $('#email').addClass('border-red-500');
+          $('#email').addClass('focus:border-red-500');
+          $('#email').after('<div class="error text-red-500 text-sm">Email is not valid</div>');
+        }
+      });
+    
+      $('#password').on('input', function() {
+        $(".error").remove();
+        $('#password').removeClass('border-red-500');
+        $('#password').removeClass('focus:border-red-500');
+        $('#password').addClass('border-blue-200');
+        $('#password').addClass('focus:border-blue-500');
+        var password = $('#password').val();
+        if (password.length < 6) {
+          $('#password').removeClass('border-blue-200');
+          $('#password').removeClass('focus:border-blue-500');
+          $('#password').addClass('border-red-500');
+          $('#password').addClass('focus:border-red-500');
+          $('#password').after('<div class="error text-red-500 text-sm">Password must be at least 6 characters long</div>');
+        }
+      });
+    
+      $('#confirm-password').on('input', function() {
+        $(".error").remove();
+        $('#confirm-password').removeClass('border-red-500');
+        $('#confirm-password').removeClass('focus:border-red-500');
+        $('#confirm-password').addClass('border-blue-200');
+        $('#confirm-password').addClass('focus:border-blue-500');
+        var confirmPassword = $('#confirm-password').val();
+        if (confirmPassword.length < 6) {
+          $('#confirm-password').removeClass('border-blue-200');
+          $('#confirm-password').removeClass('focus:border-blue-500');
+          $('#confirm-password').addClass('border-red-500');
+          $('#confirm-password').addClass('focus:border-red-500');
+          $('#confirm-password').after('<div class="error text-red-500 text-sm">Password confirmation must be at least 6 characters long</div>');
+        } else if ($('#password').val() !== confirmPassword) {
+          $('#confirm-password').removeClass('border-blue-200');
+          $('#confirm-password').removeClass('focus:border-blue-500');
+          $('#confirm-password').addClass('border-red-500');
+          $('#confirm-password').addClass('focus:border-red-500');
+          $('#confirm-password').after('<div class="error text-red-500 text-sm">Password confirmation does not match</div>');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
